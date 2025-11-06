@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot IA - Cours d'Intelligence Artificielle</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1><i class="bi bi-robot"></i> SmartCourseQA</h1>
+            </div>
+            <div class="nav-links">
+                <a href="/" class="nav-link">
+                    <i class="bi bi-house"></i> Accueil
+                </a>
+                <a href="/chatbot" class="nav-link active">
+                    <i class="bi bi-chat-dots"></i> Chatbot
+                </a>
+                <a href="/quiz" class="nav-link">
+                    <i class="bi bi-clipboard-check"></i> Quiz
+                </a>
+            </div>
+        </nav>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>Posez vos questions sur les cours d'IA</h2>
+                <p class="subtitle">Système RAG basé sur vos documents de cours</p>
+            </div>
+
+            <div id="chat-messages" class="chat-messages">
+                <div class="message bot-message">
+                    <div class="message-avatar">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>Bonjour! Je suis votre assistant pour les cours d'intelligence artificielle. Posez-moi vos questions!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <form id="chat-form">
+                    <input 
+                        type="text" 
+                        id="question-input" 
+                        placeholder="Tapez votre question ici..." 
+                        autocomplete="off"
+                        required
+                    >
+                    <button type="submit" id="send-btn">
+                        <i class="bi bi-send-fill" id="send-icon"></i>
+                        <i class="bi bi-hourglass-split" id="loading-icon" style="display: none;"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="suggestions">
+            <p class="suggestions-title">Exemples de questions:</p>
+            <button class="suggestion-btn" data-question="Qu'est-ce que l'intelligence artificielle?">
+                Qu'est-ce que l'IA?
+            </button>
+            <button class="suggestion-btn" data-question="Quels sont les principaux défis de l'intelligence artificielle?">
+                Défis de l'IA
+            </button>
+            <button class="suggestion-btn" data-question="Expliquez le machine learning">
+                Machine Learning
+            </button>
+            <button class="suggestion-btn" data-question="Quelles sont les applications de l'IA?">
+                Applications de l'IA
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const questionInput = document.getElementById('question-input');
+        const chatMessages = document.getElementById('chat-messages');
+        const sendBtn = document.getElementById('send-btn');
+        const sendIcon = document.getElementById('send-icon');
+        const loadingIcon = document.getElementById('loading-icon');
+        const suggestionBtns = document.querySelectorAll('.suggestion-btn');
+
+        // Gérer la soumission du formulaire
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const question = questionInput.value.trim();
+            
+            if (!question) return;
+
+            // Ajouter le message de l'utilisateur
+            addMessage(question, 'user');
+            questionInput.value = '';
+
+            // Afficher le chargement
+            setLoading(true);
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Ajouter la réponse du bot
+                    addMessage(data.answer, 'bot', data.sources);
+                } else {
+                    addMessage(`Erreur: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                addMessage(`Erreur de connexion: ${error.message}`, 'error');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // Gérer les suggestions
+        suggestionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                questionInput.value = btn.dataset.question;
+                chatForm.dispatchEvent(new Event('submit'));
+            });
+        });
+
+        function addMessage(content, type, sources = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+
+            if (type === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        <p>${escapeHtml(content)}</p>
+                    </div>
+                    <div class="message-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                `;
+            } else if (type === 'bot') {
+                let sourcesHtml = '';
+                if (sources && sources.length > 0) {
+                    sourcesHtml = `
+                        <div class="sources">
+                            <p class="sources-title"><i class="bi bi-book"></i> Sources utilisées:</p>
+                            ${sources.map((source, i) => `
+                                <div class="source-item">
+                                    <strong>${source.source}</strong> (chunk ${source.chunk})
+                                    <p class="source-preview">${escapeHtml(source.content)}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>${formatText(content)}</p>
+                        ${sourcesHtml}
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>${escapeHtml(content)}</p>
+                    </div>
+                `;
+            }
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function setLoading(isLoading) {
+            sendBtn.disabled = isLoading;
+            questionInput.disabled = isLoading;
+            
+            if (isLoading) {
+                sendIcon.style.display = 'none';
+                loadingIcon.style.display = 'inline';
+            } else {
+                sendIcon.style.display = 'inline';
+                loadingIcon.style.display = 'none';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatText(text) {
+            // Convertir les retours à la ligne en <br>
+            return escapeHtml(text).replace(/\n/g, '<br>');
+        }
+    </script>
+</body>
+</html>

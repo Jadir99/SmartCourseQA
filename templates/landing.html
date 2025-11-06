@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCourseQA - Votre Assistant IA pour l'Apprentissage</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+            background: #000;
+        }
+
+        .landing-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Hero Section with Galactic Background */
+        .hero-section {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 20px;
+            min-height: 100vh;
+            background: #000000;
+            overflow: hidden;
+        }
+
+        /* Animated Starfield Background */
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(2px 2px at 20% 30%, white, transparent),
+                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 50% 50%, white, transparent),
+                radial-gradient(1px 1px at 80% 10%, white, transparent),
+                radial-gradient(2px 2px at 90% 60%, white, transparent),
+                radial-gradient(1px 1px at 33% 80%, white, transparent),
+                radial-gradient(1px 1px at 15% 60%, white, transparent);
+            background-size: 200% 200%, 300% 300%, 250% 250%, 280% 280%, 220% 220%, 260% 260%, 290% 290%;
+            background-position: 0% 0%, 40% 60%, 70% 30%, 20% 80%, 90% 10%, 50% 90%, 10% 40%;
+            animation: starfield 60s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes starfield {
+            0%, 100% { 
+                background-position: 0% 0%, 40% 60%, 70% 30%, 20% 80%, 90% 10%, 50% 90%, 10% 40%;
+            }
+            50% { 
+                background-position: 100% 100%, 60% 40%, 30% 70%, 80% 20%, 10% 90%, 90% 10%, 40% 60%;
+            }
+        }
+
+        /* Nebula Effect */
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(ellipse at 30% 40%, rgba(138, 43, 226, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(75, 0, 130, 0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(147, 51, 234, 0.2) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 70%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(124, 58, 237, 0.2) 0%, transparent 55%);
+            animation: nebulaDrift 40s ease-in-out infinite;
+            mix-blend-mode: screen;
+        }
+
+        @keyframes nebulaDrift {
+            0%, 100% { 
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 0.6;
+            }
+            33% { 
+                transform: translate(-5%, 5%) rotate(120deg) scale(1.1);
+                opacity: 0.8;
+            }
+            66% { 
+                transform: translate(5%, -5%) rotate(240deg) scale(0.95);
+                opacity: 0.7;
+            }
+        }
+
+        /* Galaxy Spiral Effect */
+        .galaxy-spiral {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            transform: translate(-50%, -50%);
+            background: 
+                radial-gradient(ellipse at center, 
+                    transparent 0%, 
+                    transparent 30%,
+                    rgba(124, 58, 237, 0.03) 40%,
+                    rgba(168, 85, 247, 0.05) 50%,
+                    rgba(147, 51, 234, 0.03) 60%,
+                    transparent 70%);
+            animation: galaxyRotate 100s linear infinite;
+        }
+
+        @keyframes galaxyRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Shooting Stars */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        /* Regular floating particles */
+        .particle.orb {
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(168, 85, 247, 0.4));
+            box-shadow: 
+                0 0 10px rgba(168, 85, 247, 0.6),
+                0 0 20px rgba(168, 85, 247, 0.4),
+                0 0 30px rgba(168, 85, 247, 0.2);
+        }
+
+        /* Shooting stars */
+        .particle.shooting-star {
+            width: 2px !important;
+            height: 2px !important;
+            background: white;
+            box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .particle.shooting-star::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 2px;
+            width: 50px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 100%);
+            transform: translateX(2px);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-100vh) translateX(100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        @keyframes shootingStar {
+            0% {
+                transform: translateY(0) translateX(0) rotate(-45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(300px) translateX(300px) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+
+        .particle.shooting-star {
+            animation: shootingStar 1.5s linear infinite;
+        }
+
+        /* Cosmic Dust Effect */
+        .cosmic-dust {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(1px 1px at 10% 20%, rgba(168, 85, 247, 0.3), transparent),
+                radial-gradient(1px 1px at 90% 80%, rgba(124, 58, 237, 0.3), transparent),
+                radial-gradient(1px 1px at 30% 60%, rgba(147, 51, 234, 0.2), transparent),
+                radial-gradient(1px 1px at 70% 40%, rgba(168, 85, 247, 0.25), transparent),
+                radial-gradient(1px 1px at 50% 90%, rgba(124, 58, 237, 0.2), transparent);
+            background-size: 100% 100%;
+            animation: dustDrift 30s ease-in-out infinite;
+            opacity: 0.4;
+        }
+
+        @keyframes dustDrift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, -20px); }
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            position: relative;
+            z-index: 10;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 50px;
+            color: #a855f7;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 20px rgba(168, 85, 247, 0);
+            }
+        }
+
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.4));
+            }
+            50% {
+                filter: drop-shadow(0 0 40px rgba(168, 85, 247, 0.8));
+            }
+        }
+
+        .hero-subtitle {
+            font-size: 1.6rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 3rem;
+            font-weight: 300;
+            line-height: 1.6;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        .btn-hero {
+            padding: 1.2rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-hero:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary-hero {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+            box-shadow: 0 10px 40px rgba(124, 58, 237, 0.4);
+            border: 2px solid transparent;
+        }
+
+        .btn-primary-hero:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 60px rgba(124, 58, 237, 0.6);
+        }
+
+        .btn-secondary-hero {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 2px solid rgba(168, 85, 247, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary-hero:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: rgba(168, 85, 247, 0.2);
+            border-color: rgba(168, 85, 247, 0.8);
+            box-shadow: 0 20px 60px rgba(168, 85, 247, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(168, 85, 247, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        .features-section {
+            padding: 120px 20px;
+            background: #000000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Space Background for Features */
+        .features-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 10% 10%, rgba(75, 0, 130, 0.15) 0%, transparent 40%),
+                radial-gradient(ellipse at 90% 90%, rgba(138, 43, 226, 0.12) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 50%, rgba(147, 51, 234, 0.08) 0%, transparent 50%);
+            animation: deepSpacePulse 25s ease-in-out infinite;
+        }
+
+        @keyframes deepSpacePulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        .features-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(168, 85, 247, 0.3) 25%,
+                rgba(124, 58, 237, 0.5) 50%,
+                rgba(168, 85, 247, 0.3) 75%,
+                transparent 100%);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+        }
+
+        .features-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(20, 5, 40, 0.6) 0%, rgba(10, 1, 24, 0.6) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 25px;
+            padding: 3rem;
+            text-align: left;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #7c3aed, #a855f7, #c084fc);
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px);
+            border-color: rgba(168, 85, 247, 0.6);
+            box-shadow: 0 30px 80px rgba(168, 85, 247, 0.3);
+            background: linear-gradient(135deg, rgba(30, 10, 60, 0.8) 0%, rgba(20, 5, 40, 0.8) 100%);
+        }
+
+        .feature-icon-wrapper {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(168, 85, 247, 0.4) 100%);
+        }
+
+        .feature-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .tech-section {
+            padding: 80px 20px;
+            background: #000000;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Constellation Effect */
+        .tech-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(124, 58, 237, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(147, 51, 234, 0.15) 0%, transparent 45%);
+            animation: constellationShift 30s ease-in-out infinite;
+        }
+
+        @keyframes constellationShift {
+            0%, 100% { 
+                transform: translateY(0) scale(1);
+                opacity: 0.6;
+            }
+            50% { 
+                transform: translateY(-20px) scale(1.05);
+                opacity: 0.9;
+            }
+        }
+
+        /* Energy Lines */
+        .tech-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(90deg, transparent 0%, rgba(168, 85, 247, 0.05) 50%, transparent 100%),
+                linear-gradient(0deg, transparent 0%, rgba(124, 58, 237, 0.05) 50%, transparent 100%);
+            background-size: 100px 100%, 100% 100px;
+            animation: energyFlow 20s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes energyFlow {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 100px 0, 0 100px; }
+        }
+
+        .tech-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tech-badge {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            color: #c084fc;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-badge::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(168, 85, 247, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .tech-badge:hover::before {
+            width: 200px;
+            height: 200px;
+        }
+
+        .tech-badge:hover {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.4) 0%, rgba(168, 85, 247, 0.4) 100%);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.4);
+            color: white;
+        }
+
+        .cta-section {
+            padding: 120px 20px;
+            background: #000000;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Wormhole Effect */
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            transform: translate(-50%, -50%);
+            background: 
+                radial-gradient(circle at center, 
+                    rgba(124, 58, 237, 0.3) 0%,
+                    rgba(168, 85, 247, 0.2) 15%,
+                    rgba(147, 51, 234, 0.15) 30%,
+                    rgba(124, 58, 237, 0.1) 45%,
+                    rgba(168, 85, 247, 0.05) 60%,
+                    transparent 75%);
+            animation: wormhole 15s ease-in-out infinite;
+        }
+
+        @keyframes wormhole {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 0.6;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.2) rotate(180deg);
+                opacity: 1;
+            }
+        }
+
+        /* Portal Rings */
+        .cta-section::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150%;
+            height: 150%;
+            transform: translate(-50%, -50%);
+            background: 
+                radial-gradient(circle at center, transparent 10%, rgba(168, 85, 247, 0.1) 11%, transparent 12%),
+                radial-gradient(circle at center, transparent 20%, rgba(124, 58, 237, 0.1) 21%, transparent 22%),
+                radial-gradient(circle at center, transparent 30%, rgba(147, 51, 234, 0.08) 31%, transparent 32%),
+                radial-gradient(circle at center, transparent 40%, rgba(168, 85, 247, 0.06) 41%, transparent 42%);
+            animation: portalExpand 12s ease-in-out infinite;
+        }
+
+        @keyframes portalExpand {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0.4;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 40px rgba(168, 85, 247, 0.5);
+        }
+
+        .cta-description {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            z-index: 10;
+        }
+
+        .scroll-indicator i {
+            font-size: 2rem;
+            color: rgba(168, 85, 247, 0.7);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.8rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-hero {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .section-title {
+                font-size: 2.2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="landing-container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="galaxy-spiral"></div>
+            <div class="cosmic-dust"></div>
+            <div class="particles" id="particles"></div>
+
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="bi bi-stars"></i> Propulsé par l'IA de pointe
+                </div>
+                
+                <h1 class="hero-title">SmartCourseQA</h1>
+                
+                <p class="hero-subtitle">
+                    L'assistant intelligent qui transforme vos cours en conversations interactives 
+                    et vous aide à maîtriser l'IA avec des quiz personnalisés
+                </p>
+                
+                <div class="hero-buttons">
+                    <a href="/chatbot" class="btn-hero btn-primary-hero">
+                        <i class="bi bi-chat-dots-fill"></i>
+                        Démarrer le Chatbot
+                    </a>
+                    <a href="/quiz" class="btn-hero btn-secondary-hero">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        Tester mes Connaissances
+                    </a>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">
+                            <i class="bi bi-infinity"></i>
+                        </div>
+                        <div class="stat-label">Questions Illimitées</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">Questions par Quiz</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">⚡</div>
+                        <div class="stat-label">Réponses Instantanées</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scroll-indicator">
+                <i class="bi bi-chevron-down"></i>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="features-container">
+                <h2 class="section-title">Fonctionnalités Puissantes</h2>
+                <p class="section-subtitle">
+                    Des outils intelligents pour maximiser votre apprentissage
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-chat-quote-fill"></i>
+                        </div>
+                        <h3 class="feature-title">Chatbot Intelligent</h3>
+                        <p class="feature-description">
+                            Posez vos questions en langage naturel et recevez des réponses précises 
+                            basées sur vos documents de cours. Chaque réponse est accompagnée de 
+                            sources vérifiables pour approfondir votre compréhension.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-clipboard-check-fill"></i>
+                        </div>
+                        <h3 class="feature-title">Quiz Personnalisés</h3>
+                        <p class="feature-description">
+                            Générez automatiquement des QCM de 5 questions sur n'importe quel sujet 
+                            de vos cours. L'IA crée des questions pertinentes adaptées à votre 
+                            niveau pour un apprentissage optimal.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <h3 class="feature-title">Évaluation Intelligente</h3>
+                        <p class="feature-description">
+                            Correction instantanée avec score détaillé, identification des réponses 
+                            correctes/incorrectes et explications pédagogiques pour comprendre 
+                            vos erreurs et progresser rapidement.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-search-heart"></i>
+                        </div>
+                        <h3 class="feature-title">Recherche Hybride RAG</h3>
+                        <p class="feature-description">
+                            Technologie de pointe combinant recherche sémantique (Dense) et 
+                            lexicale (Sparse) pour des résultats ultra-précis. Le système comprend 
+                            le contexte de vos questions.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-file-earmark-pdf-fill"></i>
+                        </div>
+                        <h3 class="feature-title">Multi-Documents</h3>
+                        <p class="feature-description">
+                            Importez tous vos PDFs de cours en une fois. Le système indexe 
+                            automatiquement l'ensemble de votre bibliothèque pour une recherche 
+                            instantanée et transversale.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-lightning-fill"></i>
+                        </div>
+                        <h3 class="feature-title">Performances Optimales</h3>
+                        <p class="feature-description">
+                            Cache intelligent avec FAISS pour des temps de réponse éclair. 
+                            Première initialisation en 30s, puis 2-5s par question. 
+                            Optimisé pour une expérience fluide.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack Section -->
+        <section class="tech-section">
+            <div class="features-container">
+                <h2 class="section-title">Technologies de Pointe</h2>
+                <p class="section-subtitle">
+                    Un stack moderne pour des performances exceptionnelles
+                </p>
+                <div class="tech-grid">
+                    <span class="tech-badge"><i class="bi bi-code-square"></i> Flask</span>
+                    <span class="tech-badge"><i class="bi bi-link-45deg"></i> LangChain</span>
+                    <span class="tech-badge"><i class="bi bi-stars"></i> GPT-4o-mini</span>
+                    <span class="tech-badge"><i class="bi bi-database-fill"></i> FAISS</span>
+                    <span class="tech-badge"><i class="bi bi-emoji-smile"></i> HuggingFace</span>
+                    <span class="tech-badge"><i class="bi bi-search"></i> BM25</span>
+                    <span class="tech-badge"><i class="bi bi-python"></i> Python</span>
+                    <span class="tech-badge"><i class="bi bi-cloud-fill"></i> OpenRouter</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2 class="cta-title">
+                    Prêt à Révolutionner Votre Apprentissage ?
+                </h2>
+                <p class="cta-description">
+                    Rejoignez l'expérience SmartCourseQA et découvrez une nouvelle façon 
+                    d'apprendre l'intelligence artificielle. Interactif, intelligent, efficace.
+                </p>
+                <div class="hero-buttons">
+                    <a href="/chatbot" class="btn-hero btn-primary-hero">
+                        <i class="bi bi-rocket-takeoff-fill"></i>
+                        Commencer Maintenant
+                    </a>
+                    <a href="/quiz" class="btn-hero btn-secondary-hero">
+                        <i class="bi bi-trophy-fill"></i>
+                        Tester mes Compétences
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Create animated particles with shooting stars
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const orbCount = 40;
+            const shootingStarCount = 10;
+
+            // Create floating orbs
+            for (let i = 0; i < orbCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle orb';
+                
+                const size = Math.random() * 5 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 15 + 15) + 's';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                
+                container.appendChild(particle);
+            }
+
+            // Create shooting stars
+            for (let i = 0; i < shootingStarCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'particle shooting-star';
+                
+                star.style.top = Math.random() * 50 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 10 + 's';
+                
+                container.appendChild(star);
+            }
+        }
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observer all feature cards
+        document.querySelectorAll('.feature-card').forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(50px)';
+            card.style.transition = `all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${index * 0.1}s`;
+            observer.observe(card);
+        });
+
+        // Observer tech badges
+        document.querySelectorAll('.tech-badge').forEach((badge, index) => {
+            badge.style.opacity = '0';
+            badge.style.transform = 'scale(0.8)';
+            badge.style.transition = `all 0.5s ease ${index * 0.05}s`;
+            observer.observe(badge);
+        });
+
+        // Smooth scroll for scroll indicator
+        document.querySelector('.scroll-indicator')?.addEventListener('click', () => {
+            document.querySelector('.features-section').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        });
+
+        // Initialize
+        createParticles();
+
+        // Add parallax effect to hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero-content');
+            if (hero && scrolled < 800) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+                hero.style.opacity = 1 - (scrolled / 500);
+            }
+        });
+
+        // Mouse move effect on hero section
+        document.querySelector('.hero-section')?.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+            
+            document.querySelector('.hero-content').style.transform = 
+                `translate(${moveX}px, ${moveY}px)`;
+        });
+    </script>
+</body>
+</html>
