@@ -1,0 +1,11 @@
+{
+  "evaluation_date": "2025-11-06T11:49:20.471524",
+  "total_documents": 120,
+  "configurations_tested": 7,
+  "results": [
+    {
+      "config_name": "Petits chunks (300/50)",
+      "total_chunks": 290,
+      "avg_chunk_length": 230.76896551724138,
+      "median_chunk_length": 254.0,
+      "min_chunk_length": 

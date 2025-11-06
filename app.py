@@ -95,7 +95,7 @@ def initialize_rag_system():
     # 4. Configurer le retriever hybride
     dense_retriever = vectorstore.as_retriever(
         search_type="mmr",
-        search_kwargs={"k": 3, "fetch_k": 4}
+        search_kwargs={"k": 3, "fetch_k": 25}
     )
     
     sparse_retriever = BM25Retriever.from_documents(documents)
